@@ -1,0 +1,14 @@
+/* Reset and clean styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", "Roboto", "Helvetica", "Arial", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Material-UI will handle all the styling, so we keep this minimal */
