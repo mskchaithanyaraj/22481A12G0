@@ -77,9 +77,20 @@ export const UrlCard: React.FC<UrlCardProps> = ({
               <Typography
                 variant="h6"
                 color="primary.main"
-                sx={{ wordBreak: "break-all" }}
+                sx={{
+                  wordBreak: "break-all",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  "&:hover": {
+                    opacity: 0.8,
+                  },
+                }}
+                component="a"
+                href={`${window.location.protocol}//${url.shortUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                https://{url.shortUrl}
+                {window.location.protocol}//{url.shortUrl}
               </Typography>
               <Tooltip
                 title={copiedId === url.id ? "Copied!" : "Copy to clipboard"}

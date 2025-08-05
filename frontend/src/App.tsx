@@ -65,10 +65,72 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [activities, setActivities] = useState<Activity[]>([]);
 
+  // Load URLs from localStorage on app start
+  useEffect(() => {
+    const savedUrls = localStorage.getItem("shortenedUrls");
+    if (savedUrls) {
+      try {
+        const parsedUrls = JSON.parse(savedUrls).map(
+          (url: ShortenedUrl & { createdAt: string }) => ({
+            ...url,
+            createdAt: new Date(url.createdAt),
+          })
+        );
+        setShortenedUrls(parsedUrls);
+      } catch (error) {
+        console.error("Error loading saved URLs:", error);
+      }
+    }
+  }, []);
+
+  // Save URLs to localStorage whenever they change
+  useEffect(() => {
+    if (shortenedUrls.length > 0) {
+      localStorage.setItem("shortenedUrls", JSON.stringify(shortenedUrls));
+    }
+  }, [shortenedUrls]);
+
   // Log app initialization
   useEffect(() => {
     logger.info("component", "URL Shortener app initialized");
   }, []);
+
+  // Handle URL redirection for shortened URLs
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path !== "/" && path.length > 1) {
+      const shortCode = path.substring(1); // Remove leading slash
+
+      // Only proceed if we have URLs to check against
+      if (shortenedUrls.length > 0) {
+        const foundUrl = shortenedUrls.find((url) =>
+          url.shortUrl.endsWith(shortCode)
+        );
+
+        if (foundUrl) {
+          // Increment click count
+          setShortenedUrls((prev) =>
+            prev.map((url) =>
+              url.id === foundUrl.id ? { ...url, clicks: url.clicks + 1 } : url
+            )
+          );
+
+          // Log the click
+          logger.info("component", `Redirecting to: ${foundUrl.originalUrl}`);
+
+          // Add activity
+          addActivity("clicked", foundUrl.shortUrl);
+
+          // Redirect to original URL
+          window.location.href = foundUrl.originalUrl;
+        } else {
+          // URL not found, redirect to home
+          logger.warn("component", `Short URL not found: ${shortCode}`);
+          window.history.replaceState({}, "", "/");
+        }
+      }
+    }
+  }, [shortenedUrls]);
 
   const isMobile = useMediaQuery("(max-width:600px)");
 
@@ -115,7 +177,8 @@ function App() {
   };
 
   const generateShortUrl = () => {
-    return `localhost:5173/${Math.random().toString(36).substr(2, 8)}`;
+    const baseUrl = window.location.host; // Gets current host (localhost:5173 or production domain)
+    return `${baseUrl}/${Math.random().toString(36).substr(2, 8)}`;
   };
 
   const addActivity = (type: "created" | "clicked" | "shared", url: string) => {
@@ -180,7 +243,8 @@ function App() {
 
   const handleCopy = async (shortUrl: string, id: string) => {
     try {
-      await navigator.clipboard.writeText(`https://${shortUrl}`);
+      const fullUrl = `${window.location.protocol}//${shortUrl}`;
+      await navigator.clipboard.writeText(fullUrl);
       setCopiedId(id);
       addActivity("shared", shortUrl);
       logger.info("component", `URL copied to clipboard: ${shortUrl}`);
@@ -203,6 +267,18 @@ function App() {
     setSnackbar({
       open: true,
       message: "URL deleted successfully!",
+      severity: "success",
+    });
+  };
+
+  const handleClearAll = () => {
+    setShortenedUrls([]);
+    setActivities([]);
+    localStorage.removeItem("shortenedUrls");
+    logger.info("component", "All URLs cleared");
+    setSnackbar({
+      open: true,
+      message: "All URLs cleared!",
       severity: "success",
     });
   };
@@ -256,6 +332,16 @@ function App() {
           <IconButton color="inherit" onClick={() => setDarkMode(!darkMode)}>
             {darkMode ? <LightMode /> : <DarkMode />}
           </IconButton>
+          {shortenedUrls.length > 0 && (
+            <Button
+              color="inherit"
+              onClick={handleClearAll}
+              size="small"
+              sx={{ mr: 1 }}
+            >
+              Clear All
+            </Button>
+          )}
           <IconButton color="inherit" href="https://github.com" target="_blank">
             <GitHub />
           </IconButton>
