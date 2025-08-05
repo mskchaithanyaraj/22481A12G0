@@ -152,6 +152,10 @@ function App() {
         default: darkMode ? "#0f172a" : "#f8fafc",
         paper: darkMode ? "#1e293b" : "#ffffff",
       },
+      text: {
+        primary: darkMode ? "#f8fafc" : "#1e293b",
+        secondary: darkMode ? "#cbd5e1" : "#475569",
+      },
     },
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -318,31 +322,71 @@ function App() {
       <AppBar
         position="static"
         elevation={0}
-        sx={{ background: "transparent", backdropFilter: "blur(10px)" }}
+        sx={{
+          background: darkMode
+            ? "rgba(15, 23, 42, 0.8)"
+            : "rgba(248, 250, 252, 0.95)",
+          backdropFilter: "blur(10px)",
+          borderBottom: darkMode
+            ? "1px solid rgba(255, 255, 255, 0.1)"
+            : "1px solid rgba(0, 0, 0, 0.1)",
+        }}
       >
         <Toolbar>
           <LinkIcon sx={{ mr: 2, color: "primary.main" }} />
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, color: "primary.main" }}
+            sx={{
+              flexGrow: 1,
+              color: darkMode ? "primary.main" : "text.primary",
+              fontWeight: 600,
+            }}
           >
             Short.ly
           </Typography>
-          <IconButton color="inherit" onClick={() => setDarkMode(!darkMode)}>
+          <IconButton
+            onClick={() => setDarkMode(!darkMode)}
+            sx={{
+              color: darkMode ? "grey.300" : "grey.700",
+              "&:hover": {
+                backgroundColor: darkMode
+                  ? "rgba(255,255,255,0.1)"
+                  : "rgba(0,0,0,0.1)",
+              },
+            }}
+          >
             {darkMode ? <LightMode /> : <DarkMode />}
           </IconButton>
           {shortenedUrls.length > 0 && (
             <Button
-              color="inherit"
               onClick={handleClearAll}
               size="small"
-              sx={{ mr: 1 }}
+              sx={{
+                mr: 1,
+                color: darkMode ? "grey.300" : "grey.700",
+                "&:hover": {
+                  backgroundColor: darkMode
+                    ? "rgba(255,255,255,0.1)"
+                    : "rgba(0,0,0,0.1)",
+                },
+              }}
             >
               Clear All
             </Button>
           )}
-          <IconButton color="inherit" href="https://github.com" target="_blank">
+          <IconButton
+            href="https://github.com"
+            target="_blank"
+            sx={{
+              color: darkMode ? "grey.300" : "grey.700",
+              "&:hover": {
+                backgroundColor: darkMode
+                  ? "rgba(255,255,255,0.1)"
+                  : "rgba(0,0,0,0.1)",
+              },
+            }}
+          >
             <GitHub />
           </IconButton>
         </Toolbar>
@@ -353,7 +397,7 @@ function App() {
           minHeight: "100vh",
           background: darkMode
             ? "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)"
-            : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            : "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
           py: 4,
         }}
       >
@@ -365,8 +409,11 @@ function App() {
             </Typography>
             <Typography
               variant="h6"
-              color={darkMode ? "grey.300" : "white"}
-              sx={{ opacity: 0.9 }}
+              color={darkMode ? "grey.300" : "grey.800"}
+              sx={{
+                opacity: 0.9,
+                textShadow: darkMode ? "none" : "0 1px 2px rgba(0,0,0,0.1)",
+              }}
             >
               Transform your long URLs into short, shareable links
             </Typography>
@@ -523,8 +570,11 @@ function App() {
           <Box textAlign="center" mt={6}>
             <Typography
               variant="body2"
-              color={darkMode ? "grey.400" : "white"}
-              sx={{ opacity: 0.8 }}
+              color={darkMode ? "grey.400" : "grey.700"}
+              sx={{
+                opacity: 0.8,
+                textShadow: darkMode ? "none" : "0 1px 2px rgba(0,0,0,0.1)",
+              }}
             >
               Made with ❤️ using Material-UI
             </Typography>
