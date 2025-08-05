@@ -115,7 +115,7 @@ function App() {
   };
 
   const generateShortUrl = () => {
-    return `short.ly/${Math.random().toString(36).substr(2, 8)}`;
+    return `localhost:5173/${Math.random().toString(36).substr(2, 8)}`;
   };
 
   const addActivity = (type: "created" | "clicked" | "shared", url: string) => {
@@ -220,13 +220,13 @@ function App() {
         {
           id: "1",
           type: "clicked",
-          url: shortenedUrls[0]?.shortUrl || "short.ly/demo1",
+          url: shortenedUrls[0]?.shortUrl || "localhost:5173/demo1",
           timestamp: new Date(Date.now() - 5 * 60 * 1000),
         },
         {
           id: "2",
           type: "shared",
-          url: shortenedUrls[0]?.shortUrl || "short.ly/demo2",
+          url: shortenedUrls[0]?.shortUrl || "localhost:5173/demo2",
           timestamp: new Date(Date.now() - 15 * 60 * 1000),
         },
       ];
